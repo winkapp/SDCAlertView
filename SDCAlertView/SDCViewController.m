@@ -59,7 +59,9 @@
 													cancelButtonTitle:nil
 													otherButtonTitles:@"OK", nil];
 			alert.alertViewStyle = SDCAlertViewStyleLoginAndPasswordInput;
-			
+            [alert setTextFieldAtIndex:0 withPlaceHolder:@"first place holder "];
+			[alert setTextFieldAtIndex:1 withPlaceHolder:@"second "];
+            
 			[alert show];
 		}
 	} else if (indexPath.section == 2) {

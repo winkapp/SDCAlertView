@@ -134,6 +134,9 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
 
 - (UITextField *)textFieldAtIndex:(NSInteger)textFieldIndex;
 
+- (NSString *)textFieldPlaceHolderAtIndex:(NSInteger)index;
+- (void)setTextFieldAtIndex:(NSInteger)index withPlaceHolder:(NSString *)placeholder;
+
 @end
 
 @interface SDCAlertView (Convenience)

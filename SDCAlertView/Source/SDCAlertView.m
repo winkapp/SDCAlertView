@@ -418,6 +418,27 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 	self.alertContentView.textFieldTextColor = textFieldTextColor;
 }
 
+- (NSString *)textFieldPlaceHolder {
+	return [self textFieldPlaceHolderAtIndex:0];
+}
+
+- (NSString *)textFieldPlaceHolderAtIndex:(NSInteger)index {
+    UITextField *textField = self.alertContentView.textFields[index];
+    return textField.placeholder;
+}
+
+- (void)setTextFieldPlaceHolder:(NSString *)placeholder {
+    [self setTextFieldAtIndex:0 withPlaceHolder:placeholder];
+}
+
+- (void)setTextFieldAtIndex:(NSInteger)index withPlaceHolder:(NSString *)placeholder {
+    UITextField *textField = self.alertContentView.textFields[index];
+    textField.placeholder = placeholder;
+}
+
+
+
+
 - (UIFont *)suggestedButtonFont {
 	return self.alertContentView.suggestedButtonFont;
 }
@@ -441,6 +462,7 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 - (void)setButtonTextColor:(UIColor *)buttonTextColor {
 	self.alertContentView.buttonTextColor = buttonTextColor;
 }
+
 
 @end
 

@@ -49,6 +49,7 @@
 													cancelButtonTitle:nil
 													otherButtonTitles:@"OK", nil];
 			alert.alertViewStyle = SDCAlertViewStylePlainTextInput;
+            [alert setTextFieldPlaceHolder:@"this is a place holder"];
 			
 			[alert show];
 		} else if (indexPath.row == 3) {
@@ -157,6 +158,7 @@
 		[[SDCAlertView appearance] setTextFieldTextColor:[UIColor purpleColor]];
 		[[SDCAlertView appearance] setTitleLabelTextColor:[UIColor greenColor]];
 		[[SDCAlertView appearance] setMessageLabelTextColor:[UIColor yellowColor]];
+
 		
 	}
 }

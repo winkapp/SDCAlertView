@@ -8,7 +8,7 @@
 
 #import "SDCAlertViewContentView.h"
 
-#import "SDCAlertView_Private.h"
+#import "SDCAlertView.h"
 #import "SDCIntrinsicallySizedView.h"
 #import "UIView+SDCAutoLayout.h"
 
@@ -286,22 +286,16 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (tableView == self.suggestedButtonTableView)
-		cell.textLabel.font = self.suggestedButtonFont;
-	else
-		cell.textLabel.font = self.normalButtonFont;
-	
-	cell.textLabel.textColor = self.buttonTextColor;
+	cell.textLabel.font = (tableView == self.suggestedButtonTableView) ? self.suggestedButtonFont : self.normalButtonFont;
+	cell.textLabel.textColor = self.buttonTextColor ? self.buttonTextColor : self.tintColor;
 	cell.backgroundColor = [UIColor clearColor];
 	cell.textLabel.textAlignment = NSTextAlignmentCenter;
 	cell.textLabel.enabled = [self isButtonAtIndexPathEnabled:indexPath inTableView:tableView];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	NSInteger buttonIndex = [self buttonIndexForButtonAtIndexPath:indexPath inTableView:tableView];
-
 	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-	cell.textLabel.text = [self buttonTitleAtIndex:buttonIndex];
+	cell.textLabel.text = [self buttonTitleAtIndex:[self buttonIndexForButtonAtIndexPath:indexPath inTableView:tableView]];
 	
 	return cell;
 }

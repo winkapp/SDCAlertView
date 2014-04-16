@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Scotty Doesn't Code. All rights reserved.
 //
 
-#import "SDCAlertView_Private.h"
+#import "SDCAlertView.h"
 
 #import "SDCAlertViewController.h"
 #import "SDCAlertViewCoordinator.h"
@@ -24,6 +24,7 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 #pragma mark - SDCAlertView
 
 @interface SDCAlertView () <SDCAlertViewContentViewDelegate>
+@property (nonatomic, strong) id <SDCAlertViewTransitioning> transitionCoordinator;
 @property (nonatomic, strong) SDCAlertViewBackgroundView *alertBackgroundView;
 @property (nonatomic, strong) SDCAlertViewContentView *alertContentView;
 @end
@@ -42,7 +43,6 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 	[appearance setTextFieldFont:[UIFont systemFontOfSize:13]];
 	[appearance setSuggestedButtonFont:[UIFont boldSystemFontOfSize:17]];
 	[appearance setNormalButtonFont:[UIFont systemFontOfSize:17]];
-	[appearance setButtonTextColor:[UIColor colorWithRed:0/255.0 green:122/255.0 blue:255/255.0 alpha:1]];
 	[appearance setTextFieldTextColor:[UIColor darkTextColor]];
 	[appearance setTitleLabelTextColor:[UIColor darkTextColor]];
 	[appearance setMessageLabelTextColor:[UIColor darkTextColor]];
@@ -66,6 +66,13 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 	}
 	
 	return _alertContentView;
+}
+
+- (id <SDCAlertViewTransitioning>)transitionCoordinator {
+	if (!_transitionCoordinator)
+		return [SDCAlertViewCoordinator sharedCoordinator];
+	else
+		return _transitionCoordinator;
 }
 
 #pragma mark - Initialization
@@ -119,7 +126,7 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 #pragma mark - Visibility
 
 - (BOOL)isVisible {
-	return [[SDCAlertViewCoordinator sharedCoordinator] visibleAlert] == self;
+	return self.transitionCoordinator.visibleAlert == self;
 }
 
 #pragma mark - Presenting
@@ -133,7 +140,7 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 	[self addSubview:self.alertBackgroundView];
 	[self addSubview:self.alertContentView];
 	
-	[[SDCAlertViewCoordinator sharedCoordinator] presentAlert:self];
+	[self.transitionCoordinator presentAlert:self];
 }
 
 - (void)willBePresented {
@@ -149,7 +156,7 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 #pragma mark - Dismissing
 
 - (void)dismissWithClickedButtonIndex:(NSInteger)buttonIndex animated:(BOOL)animated {
-	[[SDCAlertViewCoordinator sharedCoordinator] dismissAlert:self withButtonIndex:buttonIndex animated:animated];
+	[self.transitionCoordinator dismissAlert:self withButtonIndex:buttonIndex animated:animated];
 }
 
 - (void)willBeDismissedWithButtonIndex:(NSInteger)buttonIndex {
@@ -292,6 +299,11 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 }
 
 #pragma mark - Layout
+
+- (void)willMoveToSuperview:(UIView *)newSuperview {
+	if (newSuperview)
+		[self setNeedsUpdateConstraints]; // Recalculate the alert's dimensions based on the alert's new superview
+}
 
 - (void)layoutSubviews {
 	[super layoutSubviews];

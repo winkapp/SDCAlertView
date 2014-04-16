@@ -9,9 +9,7 @@
 #import "SDCAlertViewController.h"
 
 #import "RBBSpringAnimation.h"
-#import "SDCAlertView_Private.h"
-#import "SDCAlertViewContentView.h"
-#import "SDCAlertViewBackgroundView.h"
+#import "SDCAlertView.h"
 
 #import "UIView+SDCAutoLayout.h"
 
@@ -41,15 +39,6 @@ static CGFloat			const SDCAlertViewSpringAnimationVelocity = 0;
 // UIViewController has a private instance variable named dimmingView. Divert from the convention...
 @synthesize dimmingView = dimmingView_;
 
-+ (instancetype)currentController {
-	UIViewController *currentController = [[UIWindow sdc_alertWindow] rootViewController];
-	
-	if ([currentController isKindOfClass:[SDCAlertViewController class]])
-		return (SDCAlertViewController *)currentController;
-	else
-		return [[self alloc] init];
-}
-
 - (instancetype)init {
 	self = [super init];
 	
@@ -65,9 +54,17 @@ static CGFloat			const SDCAlertViewSpringAnimationVelocity = 0;
 	return self;
 }
 
-- (BOOL)prefersStatusBarHidden{
-    return CGRectGetHeight([[UIApplication sharedApplication] statusBarFrame]) == 0.0;
+#pragma mark - Status Bar
+
+- (BOOL)prefersStatusBarHidden {
+    return [[UIApplication sharedApplication] isStatusBarHidden];
 }
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+	return [[UIApplication sharedApplication] statusBarStyle];
+}
+
+#pragma mark - View Hierarchy
 
 - (void)createViewHierarchy {
 	[self createDimmingView];
@@ -147,6 +144,9 @@ static CGFloat			const SDCAlertViewSpringAnimationVelocity = 0;
 	self.dismissingLastAlert = newAlert == nil;
 	[self updateDimmingViewVisibility:!self.isDismissingLastAlert];
 	
+	[self showAlert:newAlert];
+	[oldAlert resignFirstResponder];
+		
 	[CATransaction begin];
 	[CATransaction setCompletionBlock:^{
 		self.presentingFirstAlert = newAlert == nil;
@@ -156,26 +156,17 @@ static CGFloat			const SDCAlertViewSpringAnimationVelocity = 0;
 			completionHandler();
 	}];
 	
-	if (oldAlert)	[self dismissAlert:oldAlert animated:animated];
-	if (newAlert)	[self showAlert:newAlert];
+	if (oldAlert && animated)	[self applyDismissingAnimationsToAlert:oldAlert];
+	if (newAlert)				[self applyPresentingAnimationsToAlert:newAlert];
 	
 	[CATransaction commit];
 }
 
 - (void)showAlert:(SDCAlertView *)alert {
-	[alert becomeFirstResponder];
-	
-	[self.alertContainerView addSubview:alert];
-	[alert setNeedsUpdateConstraints];
-	
-	[self applyPresentingAnimationsToAlert:alert];
-}
-
-- (void)dismissAlert:(SDCAlertView *)alert animated:(BOOL)animated {
-	[alert resignFirstResponder];
-	
-	if (animated)
-		[self applyDismissingAnimationsToAlert:alert];
+	if (alert) {
+		[alert becomeFirstResponder];
+		[self.alertContainerView addSubview:alert];
+	}
 }
 
 #pragma mark - Dimming View
@@ -281,25 +272,6 @@ static CGFloat			const SDCAlertViewSpringAnimationVelocity = 0;
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-@end
-
-@implementation UIWindow(SDCAlertView)
-
-+ (UIWindow *)sdc_alertWindow {
-	NSArray *windows = [[UIApplication sharedApplication] windows];
-	NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(UIWindow *window, NSDictionary *bindings) {
-		return [window.rootViewController isKindOfClass:[SDCAlertViewController class]];
-	}];
-	
-	NSArray *alertWindows = [windows filteredArrayUsingPredicate:predicate];
-    
-#ifdef TESTING
-	NSAssert([alertWindows count] <= 1, @"At most one alert window should be active at any point");
-#endif
-	
-	return [alertWindows firstObject];
 }
 
 @end

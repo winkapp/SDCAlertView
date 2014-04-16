@@ -8,7 +8,7 @@
 
 #import "SDCAlertViewCoordinator.h"
 
-#import "SDCAlertView_Private.h"
+#import "SDCAlertView.h"
 #import "SDCAlertViewController.h"
 
 @interface SDCAlertViewCoordinator ()
@@ -27,7 +27,7 @@
 	if (!_alertWindow) {
 		_alertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 		_alertWindow.backgroundColor = [UIColor clearColor];
-		_alertWindow.rootViewController = [SDCAlertViewController currentController];
+		_alertWindow.rootViewController = [[SDCAlertViewController alloc] init];
 		_alertWindow.windowLevel = UIWindowLevelAlert;
 	}
 	
@@ -104,6 +104,18 @@
 
 #pragma mark - Presenting & Dismissing
 
+- (void)beginTransitioningFromAlert:(SDCAlertView *)oldAlert toAlert:(SDCAlertView *)newAlert {
+	self.visibleAlert = nil;
+	self.presentingAlert = newAlert;
+	self.dismissingAlert = oldAlert;
+}
+
+- (void)endTransitioning {
+	self.visibleAlert = self.presentingAlert;
+	self.presentingAlert = nil;
+	self.dismissingAlert = nil;
+}
+
 - (void)showAlert:(SDCAlertView *)newAlert
    replacingAlert:(SDCAlertView *)oldAlert
 		 animated:(BOOL)animated
@@ -111,27 +123,20 @@
 	if (!newAlert)
 		[self resaturateUI];
 	
-	self.presentingAlert = newAlert;
-	self.dismissingAlert = oldAlert;
-	self.visibleAlert = nil;
+	[self beginTransitioningFromAlert:oldAlert toAlert:newAlert];
 	
-	SDCAlertViewController *alertViewController = [SDCAlertViewController currentController];
-	[alertViewController replaceAlert:oldAlert
-							withAlert:newAlert
-							 animated:animated
-						   completion:^{
-							   self.presentingAlert = nil;
-							   self.dismissingAlert = nil;
-							   self.visibleAlert = newAlert;
-							   
-							   if (!newAlert)
-								   [self returnToUserWindow];
-							   
-							   if (completionHandler)
-								   completionHandler();
-							   
-							   [self dequeueNextTransition];
-						   }];
+	SDCAlertViewController *controller = (SDCAlertViewController *)self.alertWindow.rootViewController;
+	[controller replaceAlert:oldAlert withAlert:newAlert animated:animated completion:^{
+		[self endTransitioning];
+		
+		if (!newAlert)
+			[self returnToUserWindow];
+		
+		if (completionHandler)
+			completionHandler();
+		
+		[self dequeueNextTransition];
+	}];
 }
 
 - (void)presentAlert:(SDCAlertView *)alert {
@@ -189,6 +194,9 @@
 
 - (void)returnToUserWindow {
 	[self.userWindow makeKeyAndVisible];
+	
+	// Set the alert window to nil so that it gets removed from the screen. Otherwise, since its windowLevel is set to
+	// UIWindowLevelAlert, it will cover up the current window, causing it to appear unresponsive.
 	self.alertWindow = nil;
 }
 

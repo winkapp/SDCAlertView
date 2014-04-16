@@ -177,7 +177,13 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
 
 @property (nonatomic, strong) UIFont	*suggestedButtonFont	UI_APPEARANCE_SELECTOR;
 @property (nonatomic, strong) UIFont	*normalButtonFont		UI_APPEARANCE_SELECTOR;
-@property (nonatomic, strong) UIColor	*buttonTextColor		UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor	*buttonTextColor		UI_APPEARANCE_SELECTOR;	// Will override tintColor
 
 
+@end
+
+@interface UIColor (SDCAlertViewColors)
++ (UIColor *)sdc_alertSeparatorColor;
++ (UIColor *)sdc_textFieldBackgroundViewColor;
++ (UIColor *)sdc_dimmedBackgroundColor;
 @end

@@ -206,6 +206,10 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 	self.alertContentView.title = title;
 }
 
+- (void)setAttributedTitle:(NSAttributedString *)attributedTitle {
+    self.alertContentView.attributedTitle = attributedTitle;
+}
+
 - (NSString *)message {
 	return self.alertContentView.message;
 }

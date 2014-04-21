@@ -55,6 +55,7 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
 @interface SDCAlertView : UIView
 
 @property (nonatomic, strong) NSString *title;
+@property (nonatomic, copy) NSAttributedString *attributedTitle;
 @property (nonatomic, strong) NSString *message;
 
 @property (nonatomic) NSInteger cancelButtonIndex;

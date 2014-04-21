@@ -302,7 +302,8 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 
 	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
 	cell.textLabel.text = [self buttonTitleAtIndex:buttonIndex];
-	
+    cell.textLabel.numberOfLines = 0;
+    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
 	return cell;
 }
 
@@ -326,6 +327,11 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 - (void)setTitle:(NSString *)title {
 	_title = title;
 	self.titleLabel.text = title;
+}
+
+- (void)setAttributedTitle:(NSAttributedString *)attributedTitle {
+    _attributedTitle = attributedTitle;
+    self.titleLabel.attributedText = attributedTitle;
 }
 
 - (void)setMessage:(NSString *)message {

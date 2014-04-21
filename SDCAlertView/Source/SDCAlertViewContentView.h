@@ -20,6 +20,7 @@
 @interface SDCAlertViewContentView : UIView <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSAttributedString *attributedTitle;
 @property (nonatomic, copy) NSString *message;
 
 @property (nonatomic, readonly) NSArray *textFields;

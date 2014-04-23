@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "SDCAlertViewBackgroundView.h"
+
 FOUNDATION_EXPORT CGFloat const SDCAlertViewWidth;
 
 typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
@@ -65,6 +67,8 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
 @property (nonatomic, readonly, getter = isVisible) BOOL visible;
 
 @property (nonatomic) SDCAlertViewStyle alertViewStyle;
+
+@property (nonatomic, strong) SDCAlertViewBackgroundView *alertBackgroundView;
 
 /**
  *  The contentView property can be used to display any arbitrary view in an alert view by adding these views to the contentView.

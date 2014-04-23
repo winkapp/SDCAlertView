@@ -16,9 +16,21 @@
 	return NO;
 }
 
+- (void)setCustomBackgroundColor:(UIColor *)customBackgroundColor
+{
+    if (_customBackgroundColor != customBackgroundColor) {
+        _customBackgroundColor = customBackgroundColor;
+    }
+    
+    self.backgroundColor = _customBackgroundColor;
+}
+
 - (void)drawRect:(CGRect)rect {
 	[super drawRect:rect];
 	
+    if (self.customBackgroundColor)
+        return;
+    
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	
 	// Make sure the context is cleared

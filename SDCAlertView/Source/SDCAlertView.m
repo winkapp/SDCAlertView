@@ -10,7 +10,6 @@
 
 #import "SDCAlertViewController.h"
 #import "SDCAlertViewCoordinator.h"
-#import "SDCAlertViewBackgroundView.h"
 #import "SDCAlertViewContentView.h"
 
 #import "UIView+SDCAutoLayout.h"
@@ -25,7 +24,6 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 
 @interface SDCAlertView () <SDCAlertViewContentViewDelegate>
 @property (nonatomic, strong) id <SDCAlertViewTransitioning> transitionCoordinator;
-@property (nonatomic, strong) SDCAlertViewBackgroundView *alertBackgroundView;
 @property (nonatomic, strong) SDCAlertViewContentView *alertContentView;
 @end
 

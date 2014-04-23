@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface SDCAlertViewBackgroundView : UIView
-
+@property (nonatomic,strong) UIColor *customBackgroundColor;
 @end

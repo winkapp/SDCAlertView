@@ -360,6 +360,10 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 			self.numberOfTextFields = 1;
             [self.primaryTextField setKeyboardType:UIKeyboardTypeDecimalPad];
 			break;
+        case SDCAlertViewStyleEmailInput:
+			self.numberOfTextFields = 1;
+            [self.primaryTextField setKeyboardType:UIKeyboardTypeEmailAddress];
+			break;
 
 	}
 }

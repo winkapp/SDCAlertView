@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
     SDCAlertViewStylePlainTextInput,
     SDCAlertViewStyleLoginAndPasswordInput,
     SDCAlertViewStyleNumericalInput,
+    SDCAlertViewStyleEmailInput,
 };
 
 @class SDCAlertView;

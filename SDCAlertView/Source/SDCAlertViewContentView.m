@@ -343,6 +343,8 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    cell.textLabel.numberOfLines = 0;
+    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
 	cell.textLabel.text = [self buttonTitleAtIndex:[self buttonIndexForButtonAtIndexPath:indexPath inTableView:tableView]];
 	
 	return cell;
@@ -382,6 +384,17 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 			self.numberOfTextFields = 2;
 			self.primaryTextField.placeholder = NSLocalizedString(@"Login", nil);
 			break;
+        case SDCAlertViewStyleNumericalInput:
+			self.numberOfTextFields = 1;
+            self.primaryTextField.keyboardType = UIKeyboardTypeDecimalPad;
+			break;
+        case SDCAlertViewStyleEmailInput:
+			self.numberOfTextFields = 1;
+            self.primaryTextField.keyboardType = UIKeyboardTypeEmailAddress;
+            self.primaryTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+            self.primaryTextField.placeholder = NSLocalizedString(@"Email Address", nil);
+			break;
+
 	}
 }
 

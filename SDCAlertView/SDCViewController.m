@@ -49,6 +49,7 @@
 													cancelButtonTitle:nil
 													otherButtonTitles:@"OK", nil];
 			alert.alertViewStyle = SDCAlertViewStylePlainTextInput;
+            alert.textFieldPlaceHolder = @"this is a place holder";
 			
 			[alert show];
 		} else if (indexPath.row == 3) {
@@ -58,7 +59,9 @@
 													cancelButtonTitle:nil
 													otherButtonTitles:@"OK", nil];
 			alert.alertViewStyle = SDCAlertViewStyleLoginAndPasswordInput;
-			
+            [alert setTextFieldAtIndex:0 withPlaceHolder:@"first place holder "];
+			[alert setTextFieldAtIndex:1 withPlaceHolder:@"second "];
+            
 			[alert show];
 		}
 	} else if (indexPath.section == 2) {

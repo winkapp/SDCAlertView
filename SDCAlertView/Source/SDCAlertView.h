@@ -14,7 +14,9 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
     SDCAlertViewStyleDefault = 0,
     SDCAlertViewStyleSecureTextInput,
     SDCAlertViewStylePlainTextInput,
-    SDCAlertViewStyleLoginAndPasswordInput
+    SDCAlertViewStyleLoginAndPasswordInput,
+    SDCAlertViewStyleNumericalInput,
+    SDCAlertViewStyleEmailInput,
 };
 
 @class SDCAlertView;
@@ -132,6 +134,7 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
 - (void)dismissWithClickedButtonIndex:(NSInteger)buttonIndex animated:(BOOL)animated;
 
 - (UITextField *)textFieldAtIndex:(NSInteger)textFieldIndex;
+- (NSString *)textFieldPlaceHolderAtIndex:(NSInteger)index;
 
 @end
 
@@ -173,6 +176,8 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
  */
 @property (nonatomic, copy) NSAttributedString *attributedMessage;
 
+- (void)setTextFieldAtIndex:(NSInteger)index withPlaceHolder:(NSString *)placeholder;
+
 @end
 
 @interface SDCAlertView (Convenience)
@@ -209,6 +214,8 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
 @property (nonatomic, strong) UIColor	*messageLabelTextColor	UI_APPEARANCE_SELECTOR;
 @property (nonatomic, strong) UIFont	*textFieldFont			UI_APPEARANCE_SELECTOR;
 @property (nonatomic, strong) UIColor	*textFieldTextColor		UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) NSString	*textFieldPlaceHolder	UI_APPEARANCE_SELECTOR;
+
 @property (nonatomic, strong) UIFont	*suggestedButtonFont	UI_APPEARANCE_SELECTOR;
 @property (nonatomic, strong) UIFont	*normalButtonFont		UI_APPEARANCE_SELECTOR;
 @property (nonatomic, strong) UIColor	*buttonTextColor		UI_APPEARANCE_SELECTOR;	// Will override tintColor

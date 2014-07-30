@@ -363,6 +363,29 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 	[self sdc_centerInSuperview];
 }
 
+- (NSString *)textFieldPlaceHolder {
+	return [self textFieldPlaceHolderAtIndex:0];
+}
+
+- (NSString *)textFieldPlaceHolderAtIndex:(NSInteger)index {
+    if (index < self.alertContentView.textFields.count) {
+        UITextField *textField = self.alertContentView.textFields[index];
+        return textField.placeholder;
+    }
+    return nil;
+}
+
+- (void)setTextFieldPlaceHolder:(NSString *)placeholder {
+    [self setTextFieldAtIndex:0 withPlaceHolder:placeholder];
+}
+
+- (void)setTextFieldAtIndex:(NSInteger)index withPlaceHolder:(NSString *)placeholder {
+    if (index < self.alertContentView.textFields.count) {
+        UITextField *textField = self.alertContentView.textFields[index];
+        textField.placeholder = placeholder;
+    }
+}
+
 @end
 
 @implementation SDCAlertView (Convenience)

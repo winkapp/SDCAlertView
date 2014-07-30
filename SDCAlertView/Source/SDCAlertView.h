@@ -204,6 +204,11 @@ typedef NS_ENUM(NSInteger, SDCAlertViewStyle) {
 + (instancetype)alertWithTitle:(NSString *)title message:(NSString *)message subview:(UIView *)subview;
 + (instancetype)alertWithTitle:(NSString *)title message:(NSString *)message subview:(UIView *)subview buttons:(NSArray *)buttons;
 
+/**
+ *  A BlocksKit-compatible convenient method.
+ */
++ (instancetype)showAlertViewWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSArray *)otherButtonTitles handler:(void (^)(SDCAlertView *alertView, NSInteger buttonIndex))block;
+
 @end
 
 @interface SDCAlertView (UIAppearance)

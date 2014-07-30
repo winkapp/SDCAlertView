@@ -432,6 +432,26 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
 	return alert;		
 }
 
++ (instancetype)showAlertViewWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSArray *)otherButtonTitles handler:(void (^)(SDCAlertView *alertView, NSInteger buttonIndex))block
+{
+    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:title
+                                                          message:message
+                                                         delegate:nil
+                                                cancelButtonTitle:cancelButtonTitle
+                                                otherButtonTitles:nil];
+    
+    for (int i = 1; i < [otherButtonTitles count]; i++) {
+		[alert addButtonWithTitle:otherButtonTitles[i]];
+    }
+    
+    __weak typeof(alert) weakAlert = alert;
+    [alert showWithDismissHandler:^(NSInteger buttonIndex) {
+        if (block) block(weakAlert, buttonIndex);
+    }];
+    
+    return alert;
+}
+
 @end
 
 @implementation SDCAlertView (UIAppearance)

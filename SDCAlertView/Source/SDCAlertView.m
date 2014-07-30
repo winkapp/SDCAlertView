@@ -440,8 +440,8 @@ static UIOffset const SDCAlertViewParallaxSlideMagnitude = {15.75, 15.75};
                                                 cancelButtonTitle:cancelButtonTitle
                                                 otherButtonTitles:nil];
     
-    for (int i = 1; i < [otherButtonTitles count]; i++) {
-		[alert addButtonWithTitle:otherButtonTitles[i]];
+    for (NSString *title in otherButtonTitles) {
+		[alert addButtonWithTitle:title];
     }
     
     __weak typeof(alert) weakAlert = alert;

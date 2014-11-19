@@ -392,6 +392,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 			self.numberOfTextFields = 1;
             self.primaryTextField.keyboardType = UIKeyboardTypeEmailAddress;
             self.primaryTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+            self.primaryTextField.autocorrectionType = UITextAutocorrectionTypeNo;
             self.primaryTextField.placeholder = NSLocalizedString(@"Email Address", nil);
 			break;
 

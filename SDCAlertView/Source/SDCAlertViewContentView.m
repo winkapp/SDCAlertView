@@ -12,16 +12,13 @@
 #import "SDCIntrinsicallySizedView.h"
 #import "UIView+SDCAutoLayout.h"
 
-static UIEdgeInsets const SDCAlertViewContentPadding = {19, 15, 18.5, 15};
-
-static CGFloat const SDCAlertViewLabelSpacing = 4;
-
 static CGFloat const SDCAlertViewTextFieldBackgroundViewCornerRadius = 5;
 static UIEdgeInsets const SDCAlertViewTextFieldBackgroundViewPadding = {20, 15, 0, 15};
 static UIEdgeInsets const SDCAlertViewTextFieldBackgroundViewInsets = {0, 2, 0, 2};
 static UIEdgeInsets const SDCAlertViewTextFieldTextInsets = {0, 4, 0, 4};
 static CGFloat const SDCAlertViewPrimaryTextFieldHeight = 30;
 static CGFloat const SDCAlertViewSecondaryTextFieldHeight = 29;
+static CGFloat const SDCAlertViewButtonTableViewRowHeight = 44;
 
 static CGFloat const SDCAlertViewSeparatorThickness = 1;
 CGFloat SDCAlertViewGetSeparatorThickness() {
@@ -66,7 +63,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 		_cancelButtonIndex = SDCAlertViewUnspecifiedButtonIndex;
 		
 		_firstOtherButtonEnabled = YES;
-		
+
 		[self initializeSubviews];
 	}
 	
@@ -92,7 +89,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 	[self.titleLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
 	self.titleLabel.textAlignment = NSTextAlignmentCenter;
 	self.titleLabel.numberOfLines = 0;
-	self.titleLabel.preferredMaxLayoutWidth = SDCAlertViewWidth - SDCAlertViewContentPadding.left - SDCAlertViewContentPadding.right;
+	self.titleLabel.preferredMaxLayoutWidth = SDCAlertViewWidth - self.contentPadding.left - self.contentPadding.right;
 }
 
 - (void)initializeMessageLabel {
@@ -100,7 +97,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 	[self.messageLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
 	self.messageLabel.textAlignment = NSTextAlignmentCenter;
 	self.messageLabel.numberOfLines = 0;
-	self.messageLabel.preferredMaxLayoutWidth = SDCAlertViewWidth - SDCAlertViewContentPadding.left - SDCAlertViewContentPadding.right;
+	self.messageLabel.preferredMaxLayoutWidth = SDCAlertViewWidth - self.contentPadding.left - self.contentPadding.right;
 }
 
 - (void)initializeContentScrollView {
@@ -162,6 +159,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 	tableView.separatorInset = UIEdgeInsetsZero;
 	tableView.separatorColor = [UIColor clearColor];
 	tableView.scrollEnabled = NO;
+	tableView.rowHeight = SDCAlertViewButtonTableViewRowHeight;
 	return tableView;
 }
 
@@ -529,17 +527,17 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 	NSMutableString *verticalVFL = [@"V:|-(==topSpace)" mutableCopy];
 	NSArray *elements = [self alertViewElementsToDisplay];
 	
-	CGFloat topSpace = SDCAlertViewContentPadding.top;
-	if (![elements containsObject:self.titleLabel]) topSpace += SDCAlertViewLabelSpacing;
+	CGFloat topSpace = self.contentPadding.top;
+	if (![elements containsObject:self.titleLabel]) topSpace += self.labelSpacing;
 	
 	if ([elements containsObject:self.titleLabel]) {
-		[self.titleLabel sdc_pinWidthToWidthOfView:self.contentScrollView offset:-(SDCAlertViewContentPadding.left + SDCAlertViewContentPadding.right)];
+		[self.titleLabel sdc_pinWidthToWidthOfView:self.contentScrollView offset:-(self.contentPadding.left + self.contentPadding.right)];
 		[self.titleLabel sdc_horizontallyCenterInSuperview];
 		[verticalVFL appendString:@"-[titleLabel]"];
 	}
 	
 	if ([elements containsObject:self.messageLabel]) {
-		[self.messageLabel sdc_pinWidthToWidthOfView:self.contentScrollView offset:-(SDCAlertViewContentPadding.left + SDCAlertViewContentPadding.right)];
+		[self.messageLabel sdc_pinWidthToWidthOfView:self.contentScrollView offset:-(self.contentPadding.left + self.contentPadding.right)];
 		[self.messageLabel sdc_horizontallyCenterInSuperview];
 		
 		if ([elements containsObject:self.titleLabel])
@@ -551,7 +549,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 	[verticalVFL appendString:@"|"];
 	
 	NSDictionary *mapping = @{@"titleLabel": self.titleLabel, @"messageLabel": self.messageLabel};
-	NSDictionary *metrics = @{@"topSpace": @(topSpace), @"labelSpace": @(SDCAlertViewLabelSpacing)};
+	NSDictionary *metrics = @{@"topSpace": @(topSpace), @"labelSpace": @(self.labelSpacing)};
 	[self.contentScrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:verticalVFL options:0 metrics:metrics views:mapping]];
 }
 
@@ -628,8 +626,8 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 - (CGFloat)scrollViewContentHeight {
 	CGFloat titleLabelHeight = [self.titleLabel intrinsicContentSize].height;
 	CGFloat messageLabelHeight = [self.messageLabel intrinsicContentSize].height;
-	CGFloat scrollViewContentHeight = SDCAlertViewContentPadding.top + titleLabelHeight + messageLabelHeight;
-	scrollViewContentHeight += ([[self alertViewElementsToDisplay] containsObject:self.messageLabel] ? SDCAlertViewLabelSpacing : 0);
+	CGFloat scrollViewContentHeight = self.contentPadding.top + titleLabelHeight + messageLabelHeight;
+	scrollViewContentHeight += ([[self alertViewElementsToDisplay] containsObject:self.messageLabel] ? self.labelSpacing : 0);
 
 	return scrollViewContentHeight;
 }
@@ -637,7 +635,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 - (CGFloat)heightForContentScrollView {
 	NSArray *elements = [self alertViewElementsToDisplay];
 	
-	CGFloat scrollViewHeight = self.maximumSize.height - SDCAlertViewContentPadding.bottom;
+	CGFloat scrollViewHeight = self.maximumSize.height - self.contentPadding.bottom;
 	
 	if ([elements containsObject:self.suggestedButtonTableView])
 		scrollViewHeight -= (self.suggestedButtonTableView.rowHeight * [self.suggestedButtonTableView numberOfRowsInSection:0] + SDCAlertViewGetSeparatorThickness());
@@ -689,7 +687,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 	
 	[verticalVFL appendString:@"|"];
 	
-	NSDictionary *metrics = @{@"textFieldBackgroundViewTopSpacing": @(SDCAlertViewTextFieldBackgroundViewPadding.top), @"bottomSpacing": @(SDCAlertViewContentPadding.bottom)};
+	NSDictionary *metrics = @{@"textFieldBackgroundViewTopSpacing": @(SDCAlertViewTextFieldBackgroundViewPadding.top), @"bottomSpacing": @(self.contentPadding.bottom)};
 	NSDictionary *views = @{@"scrollView": self.contentScrollView, @"textFieldBackgroundView": self.textFieldBackgroundView, @"customContentView": self.customContentView, @"buttonTopSeparatorView": self.buttonTopSeparatorView, @"suggestedButtonTableView": self.suggestedButtonTableView, @"otherButtonsTableView": self.otherButtonsTableView};
 	[self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:verticalVFL options:0 metrics:metrics views:views]];
 }
@@ -744,6 +742,18 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 - (void)setTextFieldTextColor:(UIColor *)textFieldTextColor {
 	self.primaryTextField.textColor = textFieldTextColor;
 	self.secondaryTextField.textColor = textFieldTextColor;
+}
+
+- (void)setContentPadding:(UIEdgeInsets)contentPadding {
+	_contentPadding = contentPadding;
+	self.titleLabel.preferredMaxLayoutWidth = SDCAlertViewWidth - self.contentPadding.left - self.contentPadding.right;
+	self.messageLabel.preferredMaxLayoutWidth = SDCAlertViewWidth - self.contentPadding.left - self.contentPadding.right;
+	[self setNeedsUpdateConstraints];
+}
+
+- (void)setLabelSpacing:(CGFloat)labelSpacing {
+	_labelSpacing = labelSpacing;
+	[self setNeedsUpdateConstraints];
 }
 
 @end

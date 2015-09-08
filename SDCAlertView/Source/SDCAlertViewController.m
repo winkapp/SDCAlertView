@@ -8,6 +8,8 @@
 
 #import "SDCAlertViewController.h"
 
+#import "SDCAlertViewCoordinator.h"
+
 #import "RBBSpringAnimation.h"
 #import "SDCAlertView.h"
 
@@ -66,6 +68,16 @@ static CGFloat			const SDCAlertViewSpringAnimationVelocity = 0;
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
 	return [[UIApplication sharedApplication] statusBarStyle];
+}
+
+#pragma mark - Rotation
+
+- (BOOL)shouldAutorotate {
+	return [self.coordinator shouldRotateAlerts];
+}
+
+- (NSUInteger)supportedInterfaceOrientations {
+	return [self.coordinator supportedAlertInterfaceOrientations];
 }
 
 #pragma mark - View Hierarchy
@@ -176,6 +188,7 @@ static CGFloat			const SDCAlertViewSpringAnimationVelocity = 0;
 	if (alert) {
 		[alert becomeFirstResponder];
 		[self.alertContainerView addSubview:alert];
+		[alert layoutIfNeeded]; // Layout the alert before any animations are applied
 	}
 }
 

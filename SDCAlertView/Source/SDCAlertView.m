@@ -13,7 +13,10 @@
 #import "SDCAlertViewBackgroundView.h"
 #import "SDCAlertViewContentView.h"
 
+#import "SDCAlertController.h"
+
 #import "UIView+SDCAutoLayout.h"
+#import "UIView+Parallax.h"
 
 CGFloat const SDCAlertViewWidth = 270;
 static UIEdgeInsets const SDCAlertViewPadding = {3, 0, 3, 0};
@@ -80,7 +83,7 @@ static CGFloat const SDCAlertViewLabelSpacing = 4;
 
 #pragma mark - Initialization
 
-- (id)init {
+- (instancetype)init {
 	return [self initWithTitle:nil message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
 }
 
@@ -94,7 +97,7 @@ static CGFloat const SDCAlertViewLabelSpacing = 4;
 	if (self) {
         [self setTranslatesAutoresizingMaskIntoConstraints:NO];
         
-        [self addParallaxEffect];
+        [self sdc_addParallax:SDCAlertViewParallaxSlideMagnitude];
         
         self.layer.masksToBounds = YES;
         self.layer.cornerRadius = SDCAlertViewCornerRadius;
@@ -111,23 +114,6 @@ static CGFloat const SDCAlertViewLabelSpacing = 4;
 	}
 	
 	return self;
-}
-
-- (void)addParallaxEffect {
-	UIInterpolatingMotionEffect *horizontalParallax;
-	UIInterpolatingMotionEffect *verticalParallax;
-	
-	horizontalParallax = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.x" type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
-	horizontalParallax.minimumRelativeValue = @(-SDCAlertViewParallaxSlideMagnitude.horizontal);
-	horizontalParallax.maximumRelativeValue = @(SDCAlertViewParallaxSlideMagnitude.horizontal);
-	
-	verticalParallax = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.y" type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
-	verticalParallax.minimumRelativeValue = @(-SDCAlertViewParallaxSlideMagnitude.vertical);
-	verticalParallax.maximumRelativeValue = @(SDCAlertViewParallaxSlideMagnitude.vertical);
-	
-	UIMotionEffectGroup *groupMotionEffect = [[UIMotionEffectGroup alloc] init];
-	groupMotionEffect.motionEffects = @[horizontalParallax, verticalParallax];
-	[self addMotionEffect:groupMotionEffect];
 }
 
 #pragma mark - Visibility
@@ -158,6 +144,10 @@ static CGFloat const SDCAlertViewLabelSpacing = 4;
 - (void)wasPresented {
 	if ([self.delegate respondsToSelector:@selector(didPresentAlertView:)])
 		[self.delegate didPresentAlertView:self];
+	
+	if (self.didPresentHandler) {
+		self.didPresentHandler();
+	}
 }
 
 #pragma mark - Dismissing
@@ -562,6 +552,102 @@ static CGFloat const SDCAlertViewLabelSpacing = 4;
 
 - (void)setLabelSpacing:(CGFloat)labelSpacing {
 	self.alertContentView.labelSpacing = labelSpacing;
+}
+
+@end
+
+@implementation SDCAlertView (SDCAlertController)
+
++ (SDCAlertAction *)cancelActionInArray:(NSArray *)actions {
+	__block SDCAlertAction *action;
+	[actions enumerateObjectsUsingBlock:^(SDCAlertAction *currentAction, NSUInteger idx, BOOL *stop) {
+		if (currentAction.style == SDCAlertActionStyleCancel) {
+			action = currentAction;
+			*stop = YES;
+		}
+	}];
+	
+	return action;
+}
+
++ (instancetype)alertViewWithAlertController:(SDCAlertController *)alertController {
+	SDCAlertAction *cancelAction = [self cancelActionInArray:alertController.actions] ?: alertController.actions.firstObject;
+	NSString *cancelActionTitle = cancelAction.title ?: cancelAction.attributedTitle.string;
+	SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:alertController.title
+													  message:alertController.message
+													 delegate:alertController
+											cancelButtonTitle:cancelActionTitle
+											otherButtonTitles:nil];
+	[alertController.actions enumerateObjectsUsingBlock:^(SDCAlertAction *action, NSUInteger idx, BOOL *stop) {
+		if (action != cancelAction) {
+			if (action.title) {
+				[alert addButtonWithTitle:action.title];
+			} else {
+				[alert addButtonWithTitle:action.attributedTitle.string];
+			}
+		}
+	}];
+
+	if (alertController.attributedTitle) {
+		alert.attributedTitle = alertController.attributedTitle;
+	}
+	
+	if (alertController.attributedMessage) {
+		alert.attributedMessage = alertController.attributedMessage;
+	}
+	
+	alert.alertViewStyle = SDCAlertViewStyleDefault;
+	
+	if (alertController.textFields.count == 1) {
+		if ([alertController.textFields.firstObject isSecureTextEntry]) {
+			alert.alertViewStyle = SDCAlertViewStyleSecureTextInput;
+		} else {
+			alert.alertViewStyle = SDCAlertViewStylePlainTextInput;
+		}
+	} else if (alertController.textFields.count >= 2) {
+		alert.alertViewStyle = SDCAlertViewStyleLoginAndPasswordInput;
+	}
+	
+	alert.alertContentView.customContentView = alertController.contentView;
+	
+	alert.alwaysShowsButtonsVertically = (alertController.actionLayout == SDCAlertControllerActionLayoutVertical);
+
+	__weak typeof(alert) weakAlert = alert;
+	NSArray *actions = [alertController.actions copy];
+	BOOL(^shouldDismissBlock)(SDCAlertAction *action) = [alertController.shouldDismissBlock copy];
+	alert.shouldDismissHandler = ^BOOL(NSInteger buttonIndex) {
+		if (buttonIndex < actions.count && shouldDismissBlock) {
+			typeof(alert) strongAlert = weakAlert;
+			SDCAlertAction *action = [strongAlert actionForButtonIndex:buttonIndex inArray:actions];
+			return shouldDismissBlock(action);
+		}
+
+		return YES;
+	};
+
+	alert.didDismissHandler = ^(NSInteger buttonIndex) {
+		if (buttonIndex < actions.count) {
+			typeof(alert) strongAlert = weakAlert;
+			SDCAlertAction *action = [strongAlert actionForButtonIndex:buttonIndex inArray:actions];
+			
+			if (action.handler) {
+				action.handler(action);
+			}
+		}
+	};
+	
+	return alert;
+}
+
+- (SDCAlertAction *)actionForButtonIndex:(NSInteger)buttonIndex inArray:(NSArray *)actions {
+	SDCAlertAction *cancelAction = [[self class] cancelActionInArray:actions];
+	if (buttonIndex == self.cancelButtonIndex) {
+		return cancelAction;
+	} else {
+		NSMutableArray *mutableActions = [actions mutableCopy];
+		[mutableActions removeObject:cancelAction];
+		return mutableActions[buttonIndex - 1];
+	}
 }
 
 @end

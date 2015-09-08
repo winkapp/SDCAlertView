@@ -1,5 +1,60 @@
 # CHANGELOG
 
+# 2.3.0
+
+**What's New:**
+- Improved semantics for alert action styles. See the discussion in #81 for more information.
+
+**Bug Fixes:**
+- Fixes an animation issue in `SDCAlertView` on iOS 7 (#79)
+- The warning introduced in 2.2 is removed
+
+# 2.2.0
+
+**Bug Fixes:**
+- Fixes an incompatibility issue that would not correctly fetch text fields on iOS 7 (#67)
+
+# 2.1.1
+
+**Bug Fixes:**
+- Fixes an off-by-one error that breaks compatibility with iOS 7 (#70)
+
+# 2.1
+
+**What's New:**
+- The `usesLegacyAlert` property is now made public
+
+**Bug Fixes:**
+- Updates the import in SDCAlertController.h to not depend on any precompiled headers
+- Fixes several issues with the legacy alert (#62, #63, #64, #68)
+- Improves upon `UIAlertController` so that when an alert button is quickly tapped, it will highlight (`UIAlertController` does not do this)
+- Fixes Auto Layout warnings for multi-line labels (#60)
+- Returns the correct text when accessing `titleLabel.text`
+
+# 2.0.1
+
+**Bug Fixes:**
+- Raises an exception when presenting SDCAlertView 1.0 from a `UIAlertView` or `UIActionSheet` (#56 - thanks @nschum)
+- Prevents a crash when creating an alert with a `nil` title or message
+
+# 2.0
+
+**What's New:**
+- All new API that matches and extends `UIAlertController`
+- Ability to always show buttons horizontally or vertically
+- Backwards compatible with `SDCAlertView` (1.0)
+- More stylistic elements you can style (alert width, button separators, text fields, etc.)
+
+## 1.4.3
+
+**Bug Fixes:**
+- Fixes an issue that would not enforce `contentPadding` on the title and message labels properly (#58)
+
+## 1.4.2
+
+**What's New:**
+- Extra properties to specify padding and spacing in the alert (#55 - thanks @bcherry)
+
 ## 1.4.1
 
 **Bug Fixes:**
